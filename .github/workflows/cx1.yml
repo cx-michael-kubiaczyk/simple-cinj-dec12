@@ -1,0 +1,38 @@
+name: Cx1 Scan
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Checkmarx AST Github Action
+      uses: Checkmarx/ast-github-action@main
+      with:
+        base_uri: https://eu.ast.checkmarx.net
+        cx_tenant: cec_test_joao_reis
+        cx_client_id: ${{ secrets.CX1_CLIENT_ID }}
+        cx_client_secret: ${{ secrets.CX1_CLIENT_SECRET }}
+        project_name: simple-cinj-dec12
+        branch: ${{ github.head_ref || github.ref }}
+        github_token: ${{ github.token }}
+        additional_params: "--debug --report-format sarif --output-path ."
+        repo_name: ${{ github.event.repository.name }}
+        namespace: ${{ github.repository_owner }}
+        pr_number: ${{ github.event.number }}
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: cx_result.sarif
