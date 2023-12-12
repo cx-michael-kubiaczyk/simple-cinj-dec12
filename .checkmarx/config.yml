@@ -1,0 +1,11 @@
+version: 1
+
+checkmarx: 
+  scan:
+    configs:
+      sast:
+        presetName: 'All'
+        incremental: 'true'
+        languageMode: 'multi'
+        engineVerbose: 'true'
+        filter: '!**/*.java, !**/myfile.bak' #test, there is no java
